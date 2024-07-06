@@ -1,4 +1,4 @@
-import 'package:music_player_native/track_model.dart';
+import 'package:music_player_native/Models/track_model.dart';
 import 'package:sqflite/sqflite.dart';
 
 import 'db_helper.dart';
@@ -24,29 +24,19 @@ class Db {
         .delete(tableName, where: "path=?", whereArgs: [track.path]);
   }
 
-  // update({required NoteModel ogNote, required NoteModel newNote}) async {
-  //   final database = await DatabaseHelper().dataBase;
-
-  //   return await database.update(tableName, ogNote.toMap(newNote),
-  //       where: 'id=?', whereArgs: [ogNote.id]);
-  // }
-
   clearFavourits() async {
     final database = await DatabaseHelper().dataBase;
 
     return await database.rawDelete("DELETE FROM $tableName");
   }
 
-  Future<List<String>> getAllNotes() async {
+  Future<List<String>> getFavTracks() async {
     final database = await DatabaseHelper().dataBase;
     final tracks = await database.rawQuery('''SELECT * FROM $tableName ''');
-    print(tracks);
-    print("-----ssqdsqds");
     List<String> paths = tracks.map((e) => e["path"] as String).toList();
-    paths.forEach((element) {
+    for (var element in paths) {
       print(element);
-    });
-    print("-----ssqdsqds");
+    }
 
     return paths;
   }

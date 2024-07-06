@@ -35,8 +35,7 @@ class MainActivity : FlutterActivity() {
             when (call.method) {
                 "passTrackNameToKotlin" -> {
 
-                    val text = call.argument<String>("trackName") // hello world
-                    // Toast.makeText(this, text, Toast.LENGTH_SHORT).show()
+                    val text = call.argument<String>("trackName")
 
                     sendBroadcastToService(text)
                 }
@@ -51,6 +50,9 @@ class MainActivity : FlutterActivity() {
                 "StartService" -> {
                     startService(Intent(this, MyService::class.java))
                     result.success("Started!")
+                }
+                "StopService" -> {
+                    stopService(Intent(this, MyService::class.java))
                 }
                 else -> result.notImplemented()
             }

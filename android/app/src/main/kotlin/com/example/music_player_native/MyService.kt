@@ -60,7 +60,7 @@ class MyService : Service() {
                     acceleration = acceleration * 0.9f + delta
 
                     // acceleration value is over 12
-                    if (acceleration > 9) {
+                    if (acceleration > 15) {
 
                         sendBroadcastToMainActivity(ACTION_SHAKE)
                     }

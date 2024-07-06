@@ -1,12 +1,12 @@
 import 'package:audioplayers/audioplayers.dart';
-import 'package:flutter/services.dart';
-import 'package:music_player_native/channel_with_kotlin.dart';
-import 'package:music_player_native/track_model.dart';
+
+import 'package:music_player_native/Models/track_model.dart';
 
 class MusicPlayer {
   static PlayerState isPlaying = PlayerState.playing;
   static bool isPlayingbool = true;
   static final player = AudioPlayer();
+  get isPlayingboolget => isPlayingbool;
 
   static playAudio(TrackModel audio) async {
     isPlayingbool = true;
@@ -21,7 +21,7 @@ class MusicPlayer {
 
   static pauseAudio() async {
     isPlayingbool = false;
-    print(isPlayingbool);
+    print("inpauseAudio $isPlayingbool");
 
     await player.pause();
   }

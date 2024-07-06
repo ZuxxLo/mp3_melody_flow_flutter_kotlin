@@ -26,14 +26,15 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 //                 context.read<TrackViewModel>(). handleTabSelection(_tabController);
 
   @override
-  void dispose() {
-    MusicPlayer.player.dispose();
-    super.dispose();
+  void deactivate() {
+    print("object deactivated----------------");
+    context.read<TrackViewModel>().getMusicPlayerDispose;
+    context.read<TrackViewModel>().dispose();
+    super.deactivate();
   }
 
   @override
   Widget build(BuildContext context) {
- 
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 237, 201, 243),
       floatingActionButton: Consumer<TrackViewModel?>(
@@ -46,6 +47,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                   child: BuildFloatingActionButton(
                     currentTrack: provider.currentTrack!,
                     buildControlButtons: BuildControlButtons(
+                      isMusicPlaying: provider.getIsMusicPlaying,
                       handlePreviousTrack: provider.handlePreviousTrack,
                       handlePauseResumeTrack: provider.handlePauseResumeTrack,
                       handleNextTrack: provider.handleNextTrack,
@@ -58,6 +60,17 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       appBar: AppBar(
         centerTitle: true,
         title: const Text('Mp3 Music player'),
+        actions: [
+          IconButton(
+              onPressed: () {
+                Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(
+                    builder: (context) => const MyWidget(),
+                  ),
+                );
+              },
+              icon: Icon(Icons.abc))
+        ],
         bottom: TabBar(
           controller: _tabController,
           tabs: const <Widget>[
@@ -74,6 +87,15 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         ],
       ),
     );
+  }
+}
+
+class MyWidget extends StatelessWidget {
+  const MyWidget({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const Placeholder();
   }
 }
 
@@ -275,16 +297,18 @@ class BuildControlButtons extends StatelessWidget {
   final void Function() handlePauseResumeTrack;
   final void Function() handleNextTrack;
 
+  final bool isMusicPlaying;
+
   const BuildControlButtons({
     Key? key,
     required this.handlePreviousTrack,
     required this.handlePauseResumeTrack,
     required this.handleNextTrack,
+    required this.isMusicPlaying,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    print("sdsqdqssqdqdsdqsqsd");
     return Row(
       children: [
         IconButton(
@@ -295,8 +319,7 @@ class BuildControlButtons extends StatelessWidget {
         IconButton(
           padding: EdgeInsets.zero,
           onPressed: handlePauseResumeTrack,
-          icon:
-              Icon(MusicPlayer.isPlayingbool ? Icons.pause : Icons.play_arrow),
+          icon: Icon(isMusicPlaying ? Icons.pause : Icons.play_arrow),
         ),
         IconButton(
           padding: EdgeInsets.zero,

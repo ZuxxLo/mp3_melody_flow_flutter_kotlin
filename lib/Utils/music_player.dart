@@ -3,31 +3,33 @@ import 'package:audioplayers/audioplayers.dart';
 import 'package:music_player_native/Models/track_model.dart';
 
 class MusicPlayer {
-  static PlayerState isPlaying = PlayerState.playing;
-  static bool isPlayingbool = true;
-  static final player = AudioPlayer();
-  get isPlayingboolget => isPlayingbool;
+  MusicPlayer() {
+    print(
+        "5555555555555555555MusicPlayerMusicPlayerMusicPlayerMusicPlayerMusicPlayerMusicPlayerMusicPlayer");
+  }
+  PlayerState isPlaying = PlayerState.playing;
+  bool isPlayingbool = true;
+  final player = AudioPlayer();
 
-  static playAudio(TrackModel audio) async {
+  playAudio(TrackModel audio) async {
     isPlayingbool = true;
 
     await player.play(DeviceFileSource(audio.path!));
     player.setReleaseMode(ReleaseMode.loop);
   }
 
-  static stopAudio() async {
+  stopAudio() async {
     await player.stop();
   }
 
-  static pauseAudio() async {
+  pauseAudio() async {
     isPlayingbool = false;
     print("inpauseAudio $isPlayingbool");
 
     await player.pause();
   }
 
-  static Future<TrackModel> playNext(
-      List<TrackModel> mp3FilesData, int index) async {
+  Future<TrackModel> playNext(List<TrackModel> mp3FilesData, int index) async {
     index++;
     if (mp3FilesData.length == index) {
       index = 0;
@@ -40,7 +42,7 @@ class MusicPlayer {
     return Future.value(mp3FilesData[index]);
   }
 
-  static Future<TrackModel> playPrevious(
+  Future<TrackModel> playPrevious(
       List<TrackModel> mp3FilesData, int index) async {
     index--;
     if (-1 == index) {
@@ -54,7 +56,7 @@ class MusicPlayer {
     return Future.value(mp3FilesData[index]);
   }
 
-  static resumeAudio() async {
+  resumeAudio() async {
     isPlayingbool = true;
 
     await player.resume();

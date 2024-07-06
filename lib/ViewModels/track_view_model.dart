@@ -10,6 +10,10 @@ import '../Utils/channel_with_kotlin.dart';
 import '../Utils/music_player.dart';
 
 class TrackViewModel with ChangeNotifier {
+  final MusicPlayer _musicPlayer;
+  get getMusicPlayerDispose => _musicPlayer.player.dispose();
+  bool get getIsMusicPlaying => _musicPlayer.isPlayingbool;
+
   late final Future<List<TrackModel>> mp3Files;
   List<String> mp3FavoritesDB = [];
   List<TrackModel> mp3FilesData1 = [];
@@ -21,7 +25,9 @@ class TrackViewModel with ChangeNotifier {
     _currentTabIndex = controller.index;
   }
 
-  TrackViewModel(_) {
+  TrackViewModel(_, this._musicPlayer) {
+    print(" 3213484684rackViewModelTrackViewModelTrackViewModelTrackViewModelTrackViewModel---)");
+
     mp3Files = fetchMp3Files();
     fetchFavorites();
     ChannelWithKotlin.channel.setMethodCallHandler(
@@ -69,9 +75,9 @@ class TrackViewModel with ChangeNotifier {
   }
 
   void handlePauseResumeTrack() {
-    MusicPlayer.isPlayingbool
-        ? MusicPlayer.pauseAudio()
-        : MusicPlayer.resumeAudio();
+    _musicPlayer.isPlayingbool
+        ? _musicPlayer.pauseAudio()
+        : _musicPlayer.resumeAudio();
 
     notifyListeners();
   }
@@ -82,7 +88,7 @@ class TrackViewModel with ChangeNotifier {
     int currentIndex =
         currentList.indexWhere((element) => element == currentTrack);
     currentIndex = currentIndex == -1 ? 0 : currentIndex;
-    currentTrack = await MusicPlayer.playPrevious(currentList, currentIndex);
+    currentTrack = await _musicPlayer.playPrevious(currentList, currentIndex);
     updateKotlinTrackName();
   }
 
@@ -92,7 +98,7 @@ class TrackViewModel with ChangeNotifier {
     int currentIndex =
         currentList.indexWhere((element) => element == currentTrack);
     currentIndex = currentIndex == -1 ? 0 : currentIndex;
-    currentTrack = await MusicPlayer.playNext(currentList, currentIndex);
+    currentTrack = await _musicPlayer.playNext(currentList, currentIndex);
     updateKotlinTrackName();
   }
 
@@ -120,7 +126,7 @@ class TrackViewModel with ChangeNotifier {
   }
 
   void dismissFloatingActionButton() {
-    MusicPlayer.stopAudio();
+    _musicPlayer.stopAudio();
     currentTrack = null;
     ChannelWithKotlin.stopService();
     notifyListeners();
@@ -128,7 +134,7 @@ class TrackViewModel with ChangeNotifier {
 
   void playAudio(TrackModel? mp3File) {
     currentTrack = mp3File;
-    MusicPlayer.playAudio(currentTrack!);
+    _musicPlayer.playAudio(currentTrack!);
     updateKotlinTrackName();
   }
 

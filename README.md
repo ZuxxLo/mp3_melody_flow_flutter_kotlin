@@ -1,5 +1,5 @@
  
-  <img align="left" width="80" height="80" src="https://github.com/ZuxxLo/mp3_melody_flow_flutter_kotlin/blob/main/assets/icons/ic_launcher.png" alt="MP3 MelodyFlow  icon">
+  <img align="left" width="80" height="80" src="https://github.com/ZuxxLo/mp3_melody_flow_flutter_kotlin/blob/main/assets/icons/ic_launcher.png" alt="MP3 MelodyFlow Logo">
 
 # MP3 MelodyFlow 
   MP3 MelodyFlow is a robust and feature-rich MP3 player application developed using Flutter and Kotlin. This app offers an exceptional audio experience with advanced features like media controls, foreground notification, and favorites management.

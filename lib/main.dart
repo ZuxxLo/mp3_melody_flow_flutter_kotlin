@@ -22,7 +22,7 @@ class MyApp extends StatelessWidget {
       providers: appProviders,
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
-        title: 'Mp3 Music Player',
+        title: 'Mp3 MelodyFlow',
         theme: ThemeData(primarySwatch: Colors.deepPurple),
         home: const HomePage(),
       ),

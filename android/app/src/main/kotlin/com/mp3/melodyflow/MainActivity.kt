@@ -1,4 +1,4 @@
-package com.example.music_player_native
+package com.mp3.melodyflow
 
 import android.Manifest
 import android.content.BroadcastReceiver
@@ -35,9 +35,10 @@ class MainActivity : FlutterActivity() {
             when (call.method) {
                 "passTrackNameToKotlin" -> {
 
-                    val text = call.argument<String>("trackName")
+                    val trackName = call.argument<String>("trackName")
+                    val isPlayingbool = call.argument<Boolean>("isPlayingbool")
 
-                    sendBroadcastToService(text)
+                    sendBroadcastToService(trackName, isPlayingbool)
                 }
                 "getMp3Files" -> {
                     startService(Intent(this, MyService::class.java))
@@ -61,9 +62,11 @@ class MainActivity : FlutterActivity() {
 
     private val broadcastAction = "MainActivityToService"
 
-    private fun sendBroadcastToService(value: String?) {
+    private fun sendBroadcastToService(value: String?, isPlayingbool: Boolean?) {
         val intent = Intent(broadcastAction)
         intent.putExtra("TRACK_NAME", value)
+        intent.putExtra("IS_PLAYING_BOOL", isPlayingbool)
+
         println("Sent broadcast")
 
         sendBroadcast(intent)
@@ -112,7 +115,8 @@ class MainActivity : FlutterActivity() {
         }
     }
     private fun getMp3Files(directory: File) {
-
+        // val audioExtensions = setOf("mp3", "m4a", "wav", "flac")
+        // if (file.isFile && audioExtensions.contains(file.extension.lowercase()))
         val files = directory.listFiles()
         files?.forEach { file ->
             if (file.isFile && file.extension.equals("mp3", ignoreCase = true)) {
@@ -132,14 +136,14 @@ class MainActivity : FlutterActivity() {
             requestPermissions(arrayOf(permission), REQUEST_READ_EXTERNAL_STORAGE)
         } else {
             // Permission already granted, proceed with fetching MP3 files
-            Toast.makeText(this, "im a normal toast.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Starting.", Toast.LENGTH_SHORT).show()
             val context = applicationContext
             GlobalScope.launch(Dispatchers.IO) {
                 val rootFolder = File("/storage/emulated/0/")
                 mp3FilesList.clear()
                 getMp3Files(rootFolder)
                 withContext(Dispatchers.Main) {
-                    Toast.makeText(context, "im in the coroutine toast .", Toast.LENGTH_SHORT)
+                    Toast.makeText(context, "Fetching mp3 files in coroutines.", Toast.LENGTH_SHORT)
                             .show()
                 }
             }
@@ -157,7 +161,12 @@ class MainActivity : FlutterActivity() {
         if (requestCode == REQUEST_READ_EXTERNAL_STORAGE) {
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 // Permission granted, proceed to fetch MP3 files
-                getMp3Files()
+                val rootFolder = File("/storage/emulated/0/")
+                mp3FilesList.clear()
+                getMp3Files(rootFolder)
+
+                actionPerformed = "ALLOWED_TO_FIND_MP3_FILES"
+                updateFlutter(actionPerformed)
             } else {
                 // Permission denied, inform the user
                 Toast.makeText(

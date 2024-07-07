@@ -27,7 +27,8 @@ class ChannelWithKotlin {
     }
   }
 
-  static Future<void> updateKotlinTrackName(TrackModel? currentTrack) async {
+  static Future<void> updateKotlinTrackName(
+      TrackModel? currentTrack, bool isPlayingbool) async {
     String trackName = currentTrack?.metadata?.trackName ??
         currentTrack?.path?.split("/").last ??
         "";
@@ -36,8 +37,12 @@ class ChannelWithKotlin {
       await startService();
     }
 
+    print('****************');
+    print(isPlayingbool);
+
     await ChannelWithKotlin.channel.invokeMethod('passTrackNameToKotlin', {
       'trackName': trackName,
+      'isPlayingbool': isPlayingbool,
     });
   }
 

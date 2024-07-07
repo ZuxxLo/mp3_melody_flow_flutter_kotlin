@@ -1,4 +1,4 @@
-package com.example.music_player_native
+package com.mp3.melodyflow
 
 import android.app.Notification
 import android.app.NotificationChannel
@@ -16,9 +16,11 @@ import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.os.Build
 import android.os.IBinder
+import android.support.v4.media.session.MediaSessionCompat // for MediaSessionCompat
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import androidx.media.app.NotificationCompat.MediaStyle
 import java.util.*
 import kotlin.math.sqrt
 
@@ -28,6 +30,7 @@ class MyService : Service() {
     private var acceleration = 0f
     private var currentAcceleration = 0f
     private var lastAcceleration = 0f
+    private lateinit var mediaSession: MediaSessionCompat
 
     private fun initializeSensor() {
         // Initialize sensor manager and accelerometer
@@ -80,6 +83,7 @@ class MyService : Service() {
         const val ACTION_NEXT = "action.NEXT"
         const val ACTION_PLAY_PAUSE = "action.PLAY_PAUSE"
         const val ACTION_SHAKE = "action.SHAKE"
+        const val ACTION_STOP = "action.STOP"
     }
     @RequiresApi(Build.VERSION_CODES.O)
     private fun createNotificationChannel(channelId: String, channelName: String): String {
@@ -137,12 +141,22 @@ class MyService : Service() {
                         PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
                 )
 
+        val stopIntent = Intent(this, MyService::class.java).apply { action = ACTION_STOP }
+        val stopPendingIntent =
+                PendingIntent.getService(
+                        this,
+                        0,
+                        stopIntent,
+                        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+                )
+
         builder =
                 NotificationCompat.Builder(this, channelId)
                         .setOngoing(true)
                         .setOnlyAlertOnce(true)
-                        .setSmallIcon(R.mipmap.ic_launcher)
-                        .setContentTitle("Music Player is running")
+                        .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+                        .setSmallIcon(R.mipmap.ic_notification)
+                        .setContentTitle("MP3 MelodyFlow is running")
                         .setContentText(trackName)
                         .setCategory(Notification.CATEGORY_SERVICE)
                         .setContentIntent(pendingIntent)
@@ -151,19 +165,50 @@ class MyService : Service() {
                                 "Previous",
                                 previousPendingIntent
                         )
-                        .addAction(
-                                android.R.drawable.ic_media_pause,
-                                "Play/Pause",
-                                stopPausePendingIntent
-                        )
+                        .addAction(playPauseIcon, "Play/Pause", stopPausePendingIntent)
                         .addAction(android.R.drawable.ic_media_next, "Next", nextPendingIntent)
+                        .setStyle(
+                                androidx.media.app.NotificationCompat.MediaStyle()
+                                        .setShowActionsInCompactView(0, 1, 2)
+                        )
+                        .addAction(
+                                android.R.drawable.ic_menu_close_clear_cancel,
+                                "Stop",
+                                stopPendingIntent
+                        )
+
         serviceRunning = true
         startForeground(notificationId, builder.build())
     }
+    private fun updateNotification() {
+        val playPauseIcon =
+                if (isPlayingbool) {
+                    android.R.drawable.ic_media_pause
+                } else {
+                    android.R.drawable.ic_media_play
+                }
 
+        val stopPauseIntent =
+                Intent(this, MyService::class.java).apply { action = ACTION_PLAY_PAUSE }
+        val stopPausePendingIntent =
+                PendingIntent.getService(
+                        this,
+                        0,
+                        stopPauseIntent,
+                        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+                )
+        builder.setContentText(trackName)
+
+        builder.mActions[1] =
+                NotificationCompat.Action(playPauseIcon, "Play/Pause", stopPausePendingIntent)
+        // Notify the NotificationManager to update the notification
+
+        manager.notify(notificationId, builder.build())
+    }
     private fun stopPendingIntent(): PendingIntent {
         val stopIntent = Intent(this, MyService::class.java)
         stopIntent.action = "STOP_SERVICE"
+
         stopIntent.addFlags(Intent.FLAG_INCLUDE_STOPPED_PACKAGES)
 
         return PendingIntent.getService(
@@ -195,6 +240,12 @@ class MyService : Service() {
             }
             ACTION_PLAY_PAUSE -> {
                 println("ACTION_PLAY_PAUSE performed")
+                updateNotification()
+
+                sendBroadcastToMainActivity(action)
+            }
+            ACTION_STOP -> {
+                println("ACTION_STOP")
                 sendBroadcastToMainActivity(action)
             }
             else -> {
@@ -225,6 +276,7 @@ class MyService : Service() {
         registerReceiver(serviceReceiver, IntentFilter("MainActivityToService"))
         println("onCreate0")
         println(trackName)
+        mediaSession = MediaSessionCompat(this, "MyMediaSession")
 
         initializeSensor()
     }
@@ -237,7 +289,13 @@ class MyService : Service() {
         stopService()
     }
     var trackName: String? = "not"
-
+    var isPlayingbool: Boolean = true
+    val playPauseIcon =
+            if (isPlayingbool) {
+                android.R.drawable.ic_media_pause
+            } else {
+                android.R.drawable.ic_media_play
+            }
     private val serviceReceiver =
             object : BroadcastReceiver() {
                 override fun onReceive(context: Context?, intent: Intent?) {
@@ -245,11 +303,17 @@ class MyService : Service() {
                     if (intent?.action == "MainActivityToService") {
                         // isFlashlightOn = intent.getBooleanExtra("resultValue", false)
                         trackName = intent.getStringExtra("TRACK_NAME")
-                        println(trackName)
+                        isPlayingbool = intent.getBooleanExtra("IS_PLAYING_BOOL", false)
+
+                        println(isPlayingbool)
                         println("9-----------")
 
                         // if (serviceRunning == false) {
+                        if (!serviceRunning) {
                             startForeground()
+                        } else {
+                            updateNotification()
+                        }
                         // }
                     }
                 }

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_media_metadata/flutter_media_metadata.dart';
-import 'package:music_player_native/Utils/music_player.dart';
 import 'package:music_player_native/ViewModels/track_view_model.dart';
 import 'package:provider/provider.dart';
 import '../Models/track_model.dart';
@@ -27,7 +26,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
   @override
   void deactivate() {
-    print("object deactivated----------------");
     context.read<TrackViewModel>().getMusicPlayerDispose;
     context.read<TrackViewModel>().dispose();
     super.deactivate();
@@ -37,6 +35,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 237, 201, 243),
+      floatingActionButtonLocation:
+          FloatingActionButtonLocation.miniCenterFloat,
       floatingActionButton: Consumer<TrackViewModel?>(
         builder: (context, provider, child) {
           return provider!.currentTrack != null
@@ -59,18 +59,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       ),
       appBar: AppBar(
         centerTitle: true,
-        title: const Text('Mp3 Music player'),
-        actions: [
-          IconButton(
-              onPressed: () {
-                Navigator.of(context).pushReplacement(
-                  MaterialPageRoute(
-                    builder: (context) => const MyWidget(),
-                  ),
-                );
-              },
-              icon: Icon(Icons.abc))
-        ],
+        title: const Text('Mp3 MelodyFlow'),
         bottom: TabBar(
           controller: _tabController,
           tabs: const <Widget>[
@@ -87,15 +76,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         ],
       ),
     );
-  }
-}
-
-class MyWidget extends StatelessWidget {
-  const MyWidget({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const Placeholder();
   }
 }
 
@@ -120,7 +100,7 @@ class TrackListView extends StatelessWidget {
     }
 
     return Padding(
-      padding: const EdgeInsets.all(8.0),
+      padding: const EdgeInsets.all(0.0),
       child: Consumer<TrackViewModel>(
         builder: (context, trackProvider, child) {
           print("TrackListViewTrackListViewTrackListViewTrackListView");
@@ -140,21 +120,38 @@ class TrackListView extends StatelessWidget {
                 } else {
                   trackProvider.mp3FilesData1 = mp3FilesData;
                 }
-                return ListView.separated(
-                  itemCount: mp3FilesData.length,
-                  separatorBuilder: (context, index) =>
-                      const SizedBox(height: 5),
-                  itemBuilder: (context, index) {
-                    return InkWell(
-                      onTap: () => trackProvider.playAudio(mp3FilesData[index]),
-                      child: BuildTrackListItem(
-                        mp3fileMetaData: mp3FilesData[index].metadata!,
-                        mp3FilesData: mp3FilesData,
-                        index: index,
+                if (mp3FilesData.isEmpty) {
+                  return Image.asset(
+                    "assets/images/empty-folder.png",
+                    scale: 3,
+                    color: Colors.deepPurple,
+                  );
+                } else {
+                  return ListView(
+                    children: [
+                      const SizedBox(height: 10),
+                      ListView.separated(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemCount: mp3FilesData.length,
+                        separatorBuilder: (context, index) =>
+                            const SizedBox(height: 5),
+                        itemBuilder: (context, index) {
+                          return InkWell(
+                            onTap: () =>
+                                trackProvider.playAudio(mp3FilesData[index]),
+                            child: BuildTrackListItem(
+                              mp3fileMetaData: mp3FilesData[index].metadata!,
+                              mp3FilesData: mp3FilesData,
+                              index: index,
+                            ),
+                          );
+                        },
                       ),
-                    );
-                  },
-                );
+                      const SizedBox(height: 10),
+                    ],
+                  );
+                }
               }
             },
           );
@@ -182,13 +179,25 @@ class BuildTrackListItem extends StatelessWidget {
       return index == 0 ? 0.08 : index.toDouble() / length.toDouble();
     }
 
+    LinearGradient gradient = LinearGradient(
+      colors: [
+        const Color(0xff9796f0).withOpacity((index + 1) / mp3FilesData.length),
+        const Color(0xfffbc7d4).withOpacity((index + 1) / mp3FilesData.length)
+      ],
+      end: Alignment.topLeft,
+      begin: Alignment.bottomRight,
+    );
+
     return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 10),
       clipBehavior: Clip.hardEdge,
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(10),
-        color: Colors.purple.withOpacity(
-          colorOpacity(mp3FilesData.length, index),
+        border: Border.all(
+          strokeAlign: BorderSide.strokeAlignOutside,
+          color: Colors.white,
         ),
+        gradient: gradient,
+        borderRadius: BorderRadius.circular(10),
       ),
       height: 60,
       child: Row(
@@ -206,7 +215,7 @@ class BuildTrackListItem extends StatelessWidget {
                         height: 60,
                         child: ColorTransitionGradient(index: index),
                       ),
-                const SizedBox(width: 50),
+                const SizedBox(width: 20),
                 Flexible(
                   child: Text(
                     mp3FilesData[index].metadata!.trackName ??
@@ -247,15 +256,41 @@ class BuildFloatingActionButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      alignment: Alignment.center,
       height: 70,
-      margin: const EdgeInsets.only(left: 60, right: 30),
+      width: MediaQuery.sizeOf(context).width / 1.4,
       clipBehavior: Clip.hardEdge,
       decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10),
-          color: Colors.purple.withOpacity(0.4)),
+        boxShadow: const [
+          BoxShadow(
+            color: Colors.black38,
+            blurRadius: 4,
+            offset: Offset(0, 8), // Shadow position
+          ),
+        ],
+        gradient: const LinearGradient(
+          colors: [
+            Color.fromARGB(255, 236, 240, 252),
+            Color.fromARGB(255, 254, 182, 200),
+            // Color.fromARGB(255, 231, 188, 255)
+          ],
+          stops: [0, 0.81],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          transform: GradientRotation(0.5),
+        )
+
+        // LinearGradient(
+        //   colors: [Color(0xff9796f0), Color(0xfffbc7d4)],
+        //   stops: [0, 1],
+        //   begin: Alignment.topLeft,
+        //   end: Alignment.bottomRight,
+        // )
+
+        ,
+        borderRadius: BorderRadius.circular(10),
+      ),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           currentTrack.metadata!.albumArt != null
               ? Image.memory(currentTrack.metadata!.albumArt!, fit: BoxFit.fill)
@@ -263,13 +298,13 @@ class BuildFloatingActionButton extends StatelessWidget {
                   width: 70,
                   height: 70,
                   child: ColorTransitionGradient(index: 0)),
-          const SizedBox(width: 25),
+          const SizedBox(width: 10),
           Expanded(
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: 10),
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Expanded(
                     child: Text(
@@ -310,6 +345,7 @@ class BuildControlButtons extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(
+      mainAxisSize: MainAxisSize.min,
       children: [
         IconButton(
           padding: EdgeInsets.zero,

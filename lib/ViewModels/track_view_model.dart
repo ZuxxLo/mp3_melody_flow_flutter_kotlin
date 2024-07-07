@@ -14,7 +14,7 @@ class TrackViewModel with ChangeNotifier {
   get getMusicPlayerDispose => _musicPlayer.player.dispose();
   bool get getIsMusicPlaying => _musicPlayer.isPlayingbool;
 
-  late final Future<List<TrackModel>> mp3Files;
+  late Future<List<TrackModel>> mp3Files;
   List<String> mp3FavoritesDB = [];
   List<TrackModel> mp3FilesData1 = [];
   List<TrackModel> mp3FilesData2 = [];
@@ -25,14 +25,12 @@ class TrackViewModel with ChangeNotifier {
     _currentTabIndex = controller.index;
   }
 
-  TrackViewModel(_, this._musicPlayer) {
-    print(" 3213484684rackViewModelTrackViewModelTrackViewModelTrackViewModelTrackViewModel---)");
-
+  TrackViewModel(context, this._musicPlayer) {
     mp3Files = fetchMp3Files();
     fetchFavorites();
     ChannelWithKotlin.channel.setMethodCallHandler(
       (call) {
-        return handleMethodCall(call, context: _);
+        return handleMethodCall(call, context: context);
       },
     );
   }
@@ -69,6 +67,13 @@ class TrackViewModel with ChangeNotifier {
         case "action.NEXT":
           handleNextTrack();
           break;
+        case "action.STOP":
+          dismissFloatingActionButton();
+          break;
+
+        case "ALLOWED_TO_FIND_MP3_FILES":
+          print("s*---------------------****");
+          mp3Files = fetchMp3Files();
       }
       notifyListeners();
     }
@@ -78,6 +83,7 @@ class TrackViewModel with ChangeNotifier {
     _musicPlayer.isPlayingbool
         ? _musicPlayer.pauseAudio()
         : _musicPlayer.resumeAudio();
+    updateKotlinTrackName();
 
     notifyListeners();
   }
@@ -88,7 +94,9 @@ class TrackViewModel with ChangeNotifier {
     int currentIndex =
         currentList.indexWhere((element) => element == currentTrack);
     currentIndex = currentIndex == -1 ? 0 : currentIndex;
-    currentTrack = await _musicPlayer.playPrevious(currentList, currentIndex);
+    if (currentList.length > 1) {
+      currentTrack = await _musicPlayer.playPrevious(currentList, currentIndex);
+    }
     updateKotlinTrackName();
   }
 
@@ -98,12 +106,14 @@ class TrackViewModel with ChangeNotifier {
     int currentIndex =
         currentList.indexWhere((element) => element == currentTrack);
     currentIndex = currentIndex == -1 ? 0 : currentIndex;
-    currentTrack = await _musicPlayer.playNext(currentList, currentIndex);
+    if (currentList.length > 1) {
+      currentTrack = await _musicPlayer.playNext(currentList, currentIndex);
+    }
     updateKotlinTrackName();
   }
 
   void updateKotlinTrackName() {
-    ChannelWithKotlin.updateKotlinTrackName(currentTrack);
+    ChannelWithKotlin.updateKotlinTrackName(currentTrack, getIsMusicPlaying);
     notifyListeners();
   }
 
@@ -114,6 +124,8 @@ class TrackViewModel with ChangeNotifier {
       final metadata = await MetadataRetriever.fromFile(File(file));
       mp3Files.add(TrackModel(metadata: metadata, path: file));
     }
+    print(mp3Files.length);
+
     return mp3Files;
   }
 

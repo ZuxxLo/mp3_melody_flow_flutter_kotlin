@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
- 
+
 //////////////////
 ///
 ///
@@ -18,10 +18,10 @@ class ColorTransitionGradient extends StatefulWidget {
 
 class _ColorTransitionGradientState extends State<ColorTransitionGradient> {
   final List<Color> _colors = [
-    Colors.deepPurple,
-    Colors.deepPurpleAccent,
-    Colors.blueAccent,
-    Colors.blue
+    Color(0xffcd93ff),
+    Color.fromARGB(255, 185, 86, 255),
+    Color.fromARGB(255, 118, 0, 252),
+    Color(0xff95008a),
   ];
 
   late Timer _timer;

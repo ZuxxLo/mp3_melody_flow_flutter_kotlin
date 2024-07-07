@@ -3,10 +3,6 @@ import 'package:audioplayers/audioplayers.dart';
 import 'package:music_player_native/Models/track_model.dart';
 
 class MusicPlayer {
-  MusicPlayer() {
-    print(
-        "5555555555555555555MusicPlayerMusicPlayerMusicPlayerMusicPlayerMusicPlayerMusicPlayerMusicPlayer");
-  }
   PlayerState isPlaying = PlayerState.playing;
   bool isPlayingbool = true;
   final player = AudioPlayer();
@@ -34,7 +30,7 @@ class MusicPlayer {
     if (mp3FilesData.length == index) {
       index = 0;
     }
-
+  
     await player.play(DeviceFileSource(mp3FilesData[index].path!));
     player.setReleaseMode(ReleaseMode.loop);
     isPlayingbool = true;

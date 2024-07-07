@@ -58,9 +58,21 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         },
       ),
       appBar: AppBar(
+        toolbarHeight: 40,
+        foregroundColor: Colors.white,
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: <Color>[Color(0xff9796f0), Color(0xfffbc7d4)]),
+          ),
+        ),
         centerTitle: true,
         title: const Text('Mp3 MelodyFlow'),
         bottom: TabBar(
+          unselectedLabelColor: Colors.white,
+          labelColor: Colors.white,
           controller: _tabController,
           tabs: const <Widget>[
             Tab(icon: Icon(Icons.audiotrack)),
@@ -124,7 +136,7 @@ class TrackListView extends StatelessWidget {
                   return Image.asset(
                     "assets/images/empty-folder.png",
                     scale: 3,
-                    color: Colors.deepPurple,
+                    color: Color.fromARGB(255, 164, 163, 255),
                   );
                 } else {
                   return ListView(

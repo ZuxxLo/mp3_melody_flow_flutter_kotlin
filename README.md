@@ -18,6 +18,7 @@
 - **Coroutines**: For efficient background processing in Kotlin.
 - **Audio Player Package**: For playing audio files within Flutter.
 - **SQFlite**: For managing favorites and local storage.
+- **Provider**: For state management.
 
 <p  align="middle" float="left">
   <img src="https://github.com/ZuxxLo/mp3_melody_flow_flutter_kotlin/blob/main/demo1.gif" width="30%" "/>

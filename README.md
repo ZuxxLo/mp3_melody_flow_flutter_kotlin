@@ -9,8 +9,7 @@
 2. **Audio Playback**: The MP3 files are passed to Flutter, where the Audio Player package handles the playback.
 3. **Foreground Notification**: The audio information is passed back to Kotlin, which starts a foreground notification with media controls.
 4. **Favorites**: Users can save their favorite tracks using the SQFlite package in Flutter.
-5. **Splash Screen & App Icon**: Custom splash screen and app icon are implemented directly in the Android the right way without the use of a package.
-
+5. **Splash Screen & App Icon**: Custom splash screen(for Android 12 the splash screen is animated)and app icon are implemented directly in the Android the right way without the use of a package.
 ## Tech Stack
 
 - **Flutter**: For the UI and overall app structure.
@@ -29,4 +28,8 @@
 <p align="middle">
    <img src="https://github.com/ZuxxLo/mp3_melody_flow_flutter_kotlin/blob/main/mockup.png" width="60% "/>
 
+</p>
+<p align="middle" float="left">
+  <img src="https://github.com/ZuxxLo/mp3_melody_flow_flutter_kotlin/blob/main/splash_animated_demo_light.gif" width="30%" "/>
+  <img src="https://github.com/ZuxxLo/mp3_melody_flow_flutter_kotlin/blob/main/splash_animated_demo_dark.gif" width="30%"  "/>
 </p>

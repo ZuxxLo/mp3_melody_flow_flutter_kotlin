@@ -136,7 +136,7 @@ class MainActivity : FlutterActivity() {
             requestPermissions(arrayOf(permission), REQUEST_READ_EXTERNAL_STORAGE)
         } else {
             // Permission already granted, proceed with fetching MP3 files
-            Toast.makeText(this, "Starting.", Toast.LENGTH_SHORT).show()
+            // Toast.makeText(this, "Starting.", Toast.LENGTH_SHORT).show()
             val context = applicationContext
             GlobalScope.launch(Dispatchers.IO) {
                 val rootFolder = File("/storage/emulated/0/")

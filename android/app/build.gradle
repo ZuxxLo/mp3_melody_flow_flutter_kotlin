@@ -69,5 +69,8 @@ flutter {
 dependencies {
     implementation 'androidx.core:core-ktx:1.6.0'
     implementation 'androidx.media:media:1.6.0'
-    implementation 'com.google.android.exoplayer:exoplayer:2.14.2' // if you are using ExoPlayer
+    implementation  'androidx.core:core-splashscreen:1.0.0-rc01'
+    implementation 'androidx.core:core-splashscreen:1.0.0-alpha01'
+
+    // implementation 'com.google.android.exoplayer:exoplayer:2.14.2' // if you are using ExoPlayer
 }
